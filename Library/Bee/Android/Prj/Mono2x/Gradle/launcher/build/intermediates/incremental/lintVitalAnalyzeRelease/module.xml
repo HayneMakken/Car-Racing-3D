@@ -1,6 +1,6 @@
 <lint-module
     format="1"
-    dir="D:\HayneMakken\Unity\Car racing 3d\Library\Bee\Android\Prj\Mono2x\Gradle\launcher"
+    dir="D:\HayneMakken\Unity\Car racing 3d\Car-Racing-3D\Library\Bee\Android\Prj\Mono2x\Gradle\launcher"
     name=":launcher"
     type="APP"
     maven="Gradle:launcher:"

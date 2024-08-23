@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class CarController : MonoBehaviour
 {
-    public float acceleration = 10f;
+    public float acceleration = 20f;
     public float maxSpeed = 200f;
-    public float steeringSpeed = 1f;  
-    public float maxSteeringAngle = 30f;
+    public float steeringSensitivity = 0.02f;
+    public float maxSteeringAngle = 25f;
+    public float grip = 0.9f;
+    public float downforce = 10f;
 
     private float screenWidth;
     private Rigidbody rb;
@@ -17,46 +18,63 @@ public class CarController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         screenWidth = Screen.width;
+        rb.centerOfMass = new Vector3(0, -0.5f, 0);
     }
 
     void Update()
     {
-        if (Input.GetMouseButton(0) || Input.touchCount > 0)
-        {
-            Accelerate();
-            Steer();
-        }
+        Steer();
+    }
+
+    void FixedUpdate()
+    {
+        Accelerate();
+        ApplyGrip();
+        ApplyDownforce();
     }
 
     void Accelerate()
     {
-        if (rb.velocity.magnitude < maxSpeed)
+        if (Input.GetMouseButton(0) || Input.touchCount > 0)
         {
-            rb.AddForce(transform.forward * acceleration, ForceMode.Acceleration);
+            if (rb.velocity.magnitude < maxSpeed)
+            {
+                rb.AddForce(transform.forward * acceleration, ForceMode.Acceleration);
+            }
         }
     }
 
     void Steer()
     {
-        Vector3 touchPosition;
-
-        if (Input.touchCount > 0)
+        if (Input.GetMouseButton(0) || Input.touchCount > 0)
         {
-            touchPosition = Input.GetTouch(0).position;
+            Vector3 touchPosition = Input.touchCount > 0 ?
+                (Vector3)Input.GetTouch(0).position :
+                Input.mousePosition;
+
+            float steeringInput = (touchPosition.x - screenWidth / 2) / (screenWidth / 2);
+            steeringInput = Mathf.Clamp(steeringInput, -1f, 1f);
+
+            float steeringAngle = steeringInput * maxSteeringAngle;
+
+            float speedFactor = rb.velocity.magnitude / maxSpeed;
+            steeringAngle *= Mathf.Lerp(1f, 0.5f, speedFactor);
+
+            Vector3 rotation = Vector3.up * steeringAngle * steeringSensitivity * Time.deltaTime;
+            transform.Rotate(rotation);
         }
-        else
-        {
-            touchPosition = Input.mousePosition;
-        }
-
-        float steeringInput = (touchPosition.x - screenWidth / 2) / (screenWidth / 2);
-
-        steeringInput = Mathf.Clamp(steeringInput, -1f, 1f);
-
-    
-        float steeringAngle = steeringInput * maxSteeringAngle;
-        Vector3 rotation = Vector3.up * steeringAngle * steeringSpeed * Time.deltaTime;
-        transform.Rotate(rotation);
     }
 
+    void ApplyGrip()
+    {
+        Vector3 forwardVelocity = transform.forward * Vector3.Dot(rb.velocity, transform.forward);
+        Vector3 rightVelocity = transform.right * Vector3.Dot(rb.velocity, transform.right);
+
+        rb.velocity = forwardVelocity + rightVelocity * grip;
+    }
+
+    void ApplyDownforce()
+    {
+        rb.AddForce(-transform.up * downforce * rb.velocity.magnitude);
+    }
 }

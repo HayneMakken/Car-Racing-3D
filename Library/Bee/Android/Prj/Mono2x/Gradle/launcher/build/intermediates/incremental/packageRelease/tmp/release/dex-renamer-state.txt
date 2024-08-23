@@ -1,4 +1,4 @@
-#Tue Aug 20 15:56:38 EEST 2024
-base.0=D\:\\HayneMakken\\Unity\\Car racing 3d\\Library\\Bee\\Android\\Prj\\Mono2x\\Gradle\\launcher\\build\\intermediates\\dex\\release\\mergeDexRelease\\classes.dex
+#Thu Aug 22 20:28:29 EEST 2024
+base.0=D\:\\HayneMakken\\Unity\\Car racing 3d\\Car-Racing-3D\\Library\\Bee\\Android\\Prj\\Mono2x\\Gradle\\launcher\\build\\intermediates\\dex\\release\\mergeDexRelease\\classes.dex
 renamed.0=classes.dex
 path.0=classes.dex
